@@ -9,11 +9,13 @@ const { REACT_APP_API_URI } = process.env;
 const PAGE_LIMIT = 5;
 
 const ImagesGallery = () => {
-    const [images, setImages] = React.useState(null);
+    let [images, setImages] = React.useState(null);
     const [fetchedMaxPage, setFetchedMaxPage] = React.useState(1);
     const controllerRef = useRef(null);
     const  onBeforeSlide = async (nextIndex) => {
         // last three item fetch new
+        let currentIndex = controllerRef.current.getCurrentIndex()
+        console.log(`Current Index as ${currentIndex}`)
         let currentPage = Math.floor(nextIndex/PAGE_LIMIT) + 1
         if (((nextIndex + 3) % PAGE_LIMIT === 0) && (fetchedMaxPage === currentPage)) {
             // fetch new page and append to the list
@@ -30,10 +32,14 @@ const ImagesGallery = () => {
                 console.log(newArray)
                 setImages(newArray)
                 // setImages([...images,...imageList])
-                controllerRef.current.slideToIndex(0)
+                // controllerRef.current.slideToIndex(0)
                 setFetchedMaxPage(fetchedMaxPage+1)
+                currentIndex = controllerRef.current.getCurrentIndex()
+                console.log(`Current index after update as ${currentIndex}`)
             }
             console.log(`${fetchedMaxPage} pages retrieved`)
+            console.log(`Current images are`)
+            console.log(images)
         }
     }
 
