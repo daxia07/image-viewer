@@ -44,6 +44,7 @@ const ImagesGallery = () => {
     }
 
     React.useEffect(() => {
+        // happens on init and fetch data
         let shouldCancel = false;
         const call = async () => {
             const response = await axios.get(REACT_APP_API_URI);
@@ -57,7 +58,7 @@ const ImagesGallery = () => {
         };
         call();
         return () => (shouldCancel = true);
-    }, []);
+    }, [images]);
 
     return images ? <ImageGallery items={images}
                                   showThumbnails={false}
