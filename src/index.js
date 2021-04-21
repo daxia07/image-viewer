@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useRef} from "react";
 import ReactDOM from "react-dom";
 import axios from "axios";
 import "react-image-gallery/styles/css/image-gallery.css";
@@ -6,23 +6,35 @@ import ImageGallery from "react-image-gallery";
 const { REACT_APP_API_URI } = process.env;
 
 // pagination
-const PAGE_LIMIT = 10;
+const PAGE_LIMIT = 5;
 
 const ImagesGallery = () => {
     const [images, setImages] = React.useState(null);
     const [fetchedMaxPage, setFetchedMaxPage] = React.useState(1);
-    const  onSlide = async (currentIndex) => {
+    const controllerRef = useRef(null);
+    const  onBeforeSlide = async (nextIndex) => {
         // last three item fetch new
-        let currentPage = Math.floor(currentIndex/PAGE_LIMIT) + 1
-        if (((currentIndex + 3) % PAGE_LIMIT === 0) && (fetchedMaxPage>=currentPage)) {
+        let currentPage = Math.floor(nextIndex/PAGE_LIMIT) + 1
+        if (((nextIndex + 3) % PAGE_LIMIT === 0) && (fetchedMaxPage === currentPage)) {
             // fetch new page and append to the list
             console.log('Fetching data for next page')
             // if successful update max page
-            const response = await axios.get(REACT_APP_API_URI);
-            setFetchedMaxPage(fetchedMaxPage+1)
+            const response = await axios.get(`${REACT_APP_API_URI}?page=${currentPage+1}&limit=${PAGE_LIMIT}`);
+            if (response.data.posts && response.data.posts.length > 0) {
+                const imageList = response.data.posts.map(post => ({
+                    original: post.url
+                }))
+                console.log(controllerRef.current.getCurrentIndex())
+                // slice list to change sequence
+                const newArray = [...images.slice(nextIndex, images.length), ...imageList, ...images.slice(0, nextIndex)]
+                console.log(newArray)
+                setImages(newArray)
+                // setImages([...images,...imageList])
+                controllerRef.current.slideToIndex(0)
+                setFetchedMaxPage(fetchedMaxPage+1)
+            }
             console.log(`${fetchedMaxPage} pages retrieved`)
         }
-        console.log(currentIndex)
     }
 
     React.useEffect(() => {
@@ -33,6 +45,7 @@ const ImagesGallery = () => {
                 const imageList = response.data.posts.map(post => ({
                     original: post.url
                 }))
+                console.log(imageList)
                 setImages(imageList)
             }
         };
@@ -43,7 +56,9 @@ const ImagesGallery = () => {
     return images ? <ImageGallery items={images}
                                   showThumbnails={false}
                                   lazyLoad
-                                  onSlide={onSlide}
+                                  onBeforeSlide={onBeforeSlide}
+                                  // onSlide={onSlide}
+                                  ref={controllerRef}
     /> : null;
 };
 
