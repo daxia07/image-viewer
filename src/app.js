@@ -67,7 +67,7 @@ const App = () => {
             dispatch(getData(1));
         }
         // eslint-disable-line react-hooks/exhaustive-deps
-    }, []);
+    }, [dispatch, fetchedMaxPage]);
 
     return images ? <ImageGallery items={images}
                                   showThumbnails={false}
