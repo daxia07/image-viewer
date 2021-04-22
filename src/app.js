@@ -66,6 +66,7 @@ const App = () => {
         if (!fetchedMaxPage) {
             dispatch(getData(1));
         }
+        // eslint-disable-line react-hooks/exhaustive-deps
     }, []);
 
     return images ? <ImageGallery items={images}
