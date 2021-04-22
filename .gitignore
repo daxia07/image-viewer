@@ -19,8 +19,6 @@
 .env.production.local
 
 npm-debug.log*
-/public
 yarn-debug.log*
 yarn-error.log*
 .env
-!/public/favicon.ico
