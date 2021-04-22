@@ -63,6 +63,7 @@ const App = () => {
     }
 
     useEffect(() => {
+        document.title = "Sample Viewer"
         if (!fetchedMaxPage) {
             dispatch(getData(1));
         }
