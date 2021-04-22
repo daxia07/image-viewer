@@ -1,6 +1,8 @@
 # DEBUG project
 https://blog.jetbrains.com/webstorm/2017/01/debugging-react-apps/
 
+## update env variable to make the app work
+
 ## resources 
 ```javascript
 import React, {useEffect, useState} from 'react';
