@@ -4,7 +4,7 @@ import axios from "axios";
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
 const { REACT_APP_API_URI } = process.env;
-const PAGE_LIMIT = 5;
+const PAGE_LIMIT = 50;
 
 
 const getData = (page) => {
@@ -33,6 +33,14 @@ const updateIndex = (currentIndex) => {
     };
 }
 
+const onImageLoad = (event) => {
+    const {target: { clientWidth, clientHeight }} = event
+    // TODO: adjust view according to dimension
+    // update post with info
+    console.log('Image size as:')
+    console.log(clientWidth, clientHeight)
+}
+
 const App = () => {
     const content = useSelector(state => state);
     const dispatch = useDispatch();
@@ -44,10 +52,11 @@ const App = () => {
 
     const  onBeforeSlide = async (nextIndex) => {
         // last three item fetch new
+        console.log('Data as:')
         console.log(content)
-        console.log(`System nextIndex ${nextIndex}`)
+        // console.log(`System nextIndex ${nextIndex}`)
         let fetchedCurrentIndex = controllerRef.current.getCurrentIndex()
-        console.log(`Current Index as ${currentIndex}`)
+        // console.log(`Current Index as ${currentIndex}`)
         const swipeRight = nextIndex === 0 || nextIndex > fetchedCurrentIndex
         let currentPage = Math.floor(nextIndex/PAGE_LIMIT) + 1
         if (((currentIndex + 3) % PAGE_LIMIT === 0) && (fetchedMaxPage === currentPage)) {
@@ -75,8 +84,9 @@ const App = () => {
                                   onBeforeSlide={onBeforeSlide}
                                   ref={controllerRef}
                                   startIndex={currentIndex}
+                                  onImageLoad={onImageLoad}
 
     /> : null;
-}
+};
 
 export default App;
