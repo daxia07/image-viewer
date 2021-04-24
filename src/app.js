@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
 import { getData, updateIndex } from "./actions";
+import { useBeforeunload } from 'react-beforeunload';
 
 const { REACT_APP_PAGE_LIMIT } = process.env;
 
@@ -27,6 +28,13 @@ const App = () => {
         original: post.url
     })) : []
     //TODO: disable buttons and detect click and swipes
+
+    useBeforeunload((event) => {
+        event.preventDefault();
+        console.log('after event');
+        //TODO: update data
+    });
+
 
     const  onBeforeSlide = async (nextIndex) => {
         // last three item fetch new
