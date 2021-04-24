@@ -4,6 +4,10 @@ import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
 import { getData, updateIndex, updateMeta, updateEndTime } from "./actions";
 import { useBeforeunload } from 'react-beforeunload';
+import axios from "axios";
+const { REACT_APP_API_URI } = process.env;
+
+
 
 const { REACT_APP_PAGE_LIMIT, REACT_APP_IMAGE_TIMEOUT } = process.env;
 
@@ -31,8 +35,9 @@ const App = () => {
                 }
             }
         }
-        // TODO: upload info data, sort with ratio in the same topic
+        // TODO: sort with ratio in the same topic
         if (!ratio) {
+            // TODO: delete image in DB
             console.log("Image broken, will delete from DB")
         } else {
             console.log(`Image w/c ratios as: ${ratio}`)
@@ -42,10 +47,14 @@ const App = () => {
         dispatch(updateMeta({ratio, startTime, currentIndex}))
     }
 
-    useBeforeunload((event) => {
+    useBeforeunload(async event => {
         event.preventDefault();
         console.log('after event');
         //TODO: update data
+        const { posts } = content
+        const viewedPosts = posts.filter( item => !!item.views)
+        const res = await axios.post(REACT_APP_API_URI, viewedPosts)
+        console.log(res)
     });
 
 
