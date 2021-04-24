@@ -28,11 +28,11 @@ function reducer(state = { posts: [], currentIndex: 0, fetchedMaxPage: 0}, actio
             const { currentIndex, endTime } = action.data
             const { posts } = state
             const { views = 0, totalDuration = 0 , startTime} = posts[currentIndex]
-
+            const visitedDate = Date.now()
             posts[currentIndex] = {
                 ...posts[currentIndex],
-                endTime,
-                views,
+                visitedDate,
+                views: views + 1,
                 totalDuration: totalDuration + Math.min(endTime - startTime, 5)
             }
             return {
