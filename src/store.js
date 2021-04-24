@@ -16,9 +16,25 @@ function reducer(state = { posts: [], currentIndex: 0, fetchedMaxPage: 0}, actio
             };
         }
         case "UPDATE_META": {
-            const { meta: { currentIndex, ratio, startTime } } = action.data
+            const { meta: { currentIndex, startTime } } = action.data
             const { posts } = state
-            posts[currentIndex] = {...posts[currentIndex], ratio, startTime, view: 1}
+            posts[currentIndex] = {...posts[currentIndex], startTime}
+            return {
+                ...state,
+                posts
+            }
+        }
+        case "UPDATE_END_TIME": {
+            const { currentIndex, endTime } = action.data
+            const { posts } = state
+            const { views = 0, totalDuration = 0 , startTime} = posts[currentIndex]
+
+            posts[currentIndex] = {
+                ...posts[currentIndex],
+                endTime,
+                views,
+                totalDuration: totalDuration + Math.min(endTime - startTime, 5)
+            }
             return {
                 ...state,
                 posts

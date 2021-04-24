@@ -2,7 +2,7 @@ import React, {useEffect, useRef} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
-import { getData, updateIndex, updateMeta } from "./actions";
+import { getData, updateIndex, updateMeta, updateEndTime } from "./actions";
 import { useBeforeunload } from 'react-beforeunload';
 
 const { REACT_APP_PAGE_LIMIT, REACT_APP_IMAGE_TIMEOUT } = process.env;
@@ -68,6 +68,9 @@ const App = () => {
         // increase or decrease index
         const newIndex = swipeRight? currentIndex+1:currentIndex-1
         dispatch(updateIndex(newIndex))
+        // update end time for viewing and like tag
+        const endTime = Math.floor(Date.now() / 1000)
+        dispatch(updateEndTime(currentIndex, endTime))
     }
 
     useEffect(() => {

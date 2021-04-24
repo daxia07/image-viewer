@@ -38,3 +38,16 @@ export const updateMeta = meta => {
         })
     }
 }
+
+export const updateEndTime = (currentIndex, endTime) => {
+    console.log(`Updating endTime for image ${currentIndex}`)
+    return dispatch => {
+        dispatch({
+            type: "UPDATE_END_TIME",
+            data: {
+                currentIndex,
+                endTime
+            }
+        })
+    }
+}
