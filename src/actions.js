@@ -26,3 +26,15 @@ export const updateIndex = (currentIndex) => {
         })
     };
 }
+
+export const updateMeta = meta => {
+    console.log(`Updating meta for posts`)
+    return dispatch => {
+        dispatch({
+            type: "UPDATE_META",
+            data: {
+                meta
+            }
+        })
+    }
+}

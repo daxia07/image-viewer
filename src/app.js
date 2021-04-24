@@ -2,22 +2,11 @@ import React, {useEffect, useRef} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
-import { getData, updateIndex } from "./actions";
+import { getData, updateIndex, updateMeta } from "./actions";
 import { useBeforeunload } from 'react-beforeunload';
 
-const { REACT_APP_PAGE_LIMIT } = process.env;
+const { REACT_APP_PAGE_LIMIT, REACT_APP_IMAGE_TIMEOUT } = process.env;
 
-
-const onImageLoad = (event) => {
-    const {target: { clientWidth, clientHeight }} = event
-    const ratio = clientHeight? clientWidth/clientHeight : 0
-    // TODO: upload info data, sort with ratio in the same topic
-    if (!ratio) {
-        console.log("Image broken, will delete from DB")
-    } else {
-        console.log(`Image w/c ratios as: ${ratio}`)
-    }
-}
 
 const App = () => {
     const content = useSelector(state => state);
@@ -28,6 +17,30 @@ const App = () => {
         original: post.url
     })) : []
     //TODO: disable buttons and detect click and swipes
+
+    const onImageLoad = async event => {
+        const {target: { clientWidth, clientHeight }} = event
+        let timeout = parseInt(REACT_APP_IMAGE_TIMEOUT)
+        let ratio = clientHeight? clientWidth/clientHeight : 0
+        if (!ratio) {
+            while (timeout > 0) {
+                await new Promise(r => setTimeout(r, 20));
+                ratio = clientHeight? clientWidth/clientHeight : 0
+                if (!!ratio) {
+                    break
+                }
+            }
+        }
+        // TODO: upload info data, sort with ratio in the same topic
+        if (!ratio) {
+            console.log("Image broken, will delete from DB")
+        } else {
+            console.log(`Image w/c ratios as: ${ratio}`)
+        }
+        // record start time
+        const startTime = Math.floor(Date.now() / 1000)
+        dispatch(updateMeta({ratio, startTime, currentIndex}))
+    }
 
     useBeforeunload((event) => {
         event.preventDefault();

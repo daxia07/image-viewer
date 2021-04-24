@@ -15,6 +15,15 @@ function reducer(state = { posts: [], currentIndex: 0, fetchedMaxPage: 0}, actio
                 currentIndex
             };
         }
+        case "UPDATE_META": {
+            const { meta: { currentIndex, ratio, startTime } } = action.data
+            const { posts } = state
+            posts[currentIndex] = {...posts[currentIndex], ratio, startTime, view: 1}
+            return {
+                ...state,
+                posts
+            }
+        }
         default:
             return state;
     }
