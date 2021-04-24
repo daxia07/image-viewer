@@ -10,11 +10,11 @@ const { REACT_APP_PAGE_LIMIT } = process.env;
 const onImageLoad = (event) => {
     const {target: { clientWidth, clientHeight }} = event
     const ratio = clientHeight? clientWidth/clientHeight : 0
+    // TODO: upload info data, sort with ratio in the same topic
     if (!ratio) {
         console.log("Image broken, will delete from DB")
     } else {
         console.log(`Image w/c ratios as: ${ratio}`)
-        // upload info data
     }
 }
 
@@ -26,6 +26,7 @@ const App = () => {
     const images = posts? posts.map(post => ({
         original: post.url
     })) : []
+    //TODO: disable buttons and detect click and swipes
 
     const  onBeforeSlide = async (nextIndex) => {
         // last three item fetch new
