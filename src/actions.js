@@ -1,5 +1,8 @@
 import axios from "axios";
+import moment from "moment";
+
 const { REACT_APP_API_URI, REACT_APP_PAGE_LIMIT } = process.env;
+
 
 export const getData = (page) => {
     console.log(`Fetching data for page ${page}`)
@@ -39,14 +42,25 @@ export const updateMeta = meta => {
     }
 }
 
-export const updateEndTime = (currentIndex, endTime) => {
+export const updateEndTime = (currentIndex, endTime, post) => {
     console.log(`Updating endTime for image ${currentIndex}`)
+    const { views = 0, totalDuration = 0 , startTime} = post
+    const visitedDate = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+    const newPost = {
+        ...post,
+        visitedDate,
+        views: views + 1,
+        totalDuration: totalDuration + Math.min(endTime - startTime, 5),
+    }
+    axios.post(REACT_APP_API_URI, [newPost])
+        .then(res => console.log(res))
+        .catch(e => console.log(e))
     return dispatch => {
         dispatch({
             type: "UPDATE_END_TIME",
             data: {
+                post: newPost,
                 currentIndex,
-                endTime
             }
         })
     }

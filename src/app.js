@@ -5,11 +5,8 @@ import ImageGallery from "react-image-gallery";
 import { getData, updateIndex, updateMeta, updateEndTime } from "./actions";
 import { useBeforeunload } from 'react-beforeunload';
 import axios from "axios";
-const { REACT_APP_API_URI } = process.env;
 
-
-
-const { REACT_APP_PAGE_LIMIT, REACT_APP_IMAGE_TIMEOUT } = process.env;
+const { REACT_APP_API_URI, REACT_APP_PAGE_LIMIT, REACT_APP_IMAGE_TIMEOUT } = process.env;
 
 
 const App = () => {
@@ -40,6 +37,7 @@ const App = () => {
             // TODO: delete image in DB
             console.log("Image broken, will delete from DB")
         } else {
+            //TODO: fetch from DB
             console.log(`Image w/c ratios as: ${ratio}`)
         }
         // record start time
@@ -47,14 +45,14 @@ const App = () => {
         dispatch(updateMeta({ratio, startTime, currentIndex}))
     }
 
-    useBeforeunload(async event => {
+    useBeforeunload( event => {
         event.preventDefault();
-        console.log('after event');
-        //TODO: update data
         const { posts } = content
         const viewedPosts = posts.filter( item => !!item.views)
-        const res = await axios.post(REACT_APP_API_URI, viewedPosts)
-        console.log(res)
+        console.log(viewedPosts)
+        if (!!viewedPosts) {
+            axios.post(REACT_APP_API_URI, viewedPosts).then(res => console.log(res))
+        }
     });
 
 
@@ -79,7 +77,7 @@ const App = () => {
         dispatch(updateIndex(newIndex))
         // update end time for viewing and like tag
         const endTime = Math.floor(Date.now() / 1000)
-        dispatch(updateEndTime(currentIndex, endTime))
+        dispatch(updateEndTime(currentIndex, endTime, posts[currentIndex]))
     }
 
     useEffect(() => {
