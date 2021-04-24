@@ -9,10 +9,13 @@ const { REACT_APP_PAGE_LIMIT } = process.env;
 
 const onImageLoad = (event) => {
     const {target: { clientWidth, clientHeight }} = event
-    // TODO: adjust view according to dimension
-    // update post with info
-    console.log('Image size as:')
-    console.log(clientWidth, clientHeight)
+    const ratio = clientHeight? clientWidth/clientHeight : 0
+    if (!ratio) {
+        console.log("Image broken, will delete from DB")
+    } else {
+        console.log(`Image w/c ratios as: ${ratio}`)
+        // upload info data
+    }
 }
 
 const App = () => {
