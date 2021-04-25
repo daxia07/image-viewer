@@ -4,9 +4,8 @@ import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
 import { getData, updateIndex, updateMeta, updateEndTime } from "./actions";
 import { useBeforeunload } from 'react-beforeunload';
-import axios from "axios";
 
-const { REACT_APP_API_URI, REACT_APP_PAGE_LIMIT, REACT_APP_IMAGE_TIMEOUT } = process.env;
+const { REACT_APP_PAGE_LIMIT, REACT_APP_IMAGE_TIMEOUT } = process.env;
 
 
 const App = () => {
@@ -46,13 +45,10 @@ const App = () => {
     }
 
     useBeforeunload( event => {
-        event.preventDefault();
+        // event.preventDefault();
         const { posts } = content
         const viewedPosts = posts.filter( item => !!item.views)
         console.log(viewedPosts)
-        if (!!viewedPosts) {
-            axios.post(REACT_APP_API_URI, viewedPosts).then(res => console.log(res))
-        }
     });
 
 

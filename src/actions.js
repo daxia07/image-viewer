@@ -45,14 +45,24 @@ export const updateMeta = meta => {
 export const updateEndTime = (currentIndex, endTime, post) => {
     console.log(`Updating endTime for image ${currentIndex}`)
     const { views = 0, totalDuration = 0 , startTime} = post
-    const visitedDate = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+    const visitedDate = moment(Date.now()).format('YYYY-MM-DD[T]HH:mm:ss');
     const newPost = {
         ...post,
         visitedDate,
         views: views + 1,
         totalDuration: totalDuration + Math.min(endTime - startTime, 5),
     }
-    axios.post(REACT_APP_API_URI, [newPost])
+    console.log(`Posting data`)
+    console.log(newPost)
+    axios.post(
+        REACT_APP_API_URI,
+        {
+            post: newPost
+        }, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
         .then(res => console.log(res))
         .catch(e => console.log(e))
     return dispatch => {
