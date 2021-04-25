@@ -4,6 +4,8 @@ import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
 import { getData, updateIndex, updateMeta, updateEndTime } from "./actions";
 import { useBeforeunload } from 'react-beforeunload';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const { REACT_APP_PAGE_LIMIT, REACT_APP_IMAGE_TIMEOUT } = process.env;
 
@@ -19,6 +21,10 @@ const App = () => {
     //TODO: disable buttons and detect click and swipes
 
     const onImageLoad = async event => {
+        const { topic } = posts[currentIndex]
+        if ( (currentIndex !== 0) && (topic !== posts[currentIndex-1].topic)) {
+            toast(topic)
+        }
         const {target: { clientWidth, clientHeight }} = event
         let timeout = parseInt(REACT_APP_IMAGE_TIMEOUT)
         let ratio = clientHeight? clientWidth/clientHeight : 0
@@ -83,15 +89,22 @@ const App = () => {
         }
     }, [dispatch, fetchedMaxPage]);
 
-    return images ? <ImageGallery items={images}
-                                  showThumbnails={false}
-                                  lazyLoad
-                                  onBeforeSlide={onBeforeSlide}
-                                  ref={controllerRef}
-                                  startIndex={currentIndex}
-                                  onImageLoad={onImageLoad}
+    return images ?
+        <div>
+            <ImageGallery items={images}
+                          showThumbnails={false}
+                          lazyLoad
+                          onBeforeSlide={onBeforeSlide}
+                          ref={controllerRef}
+                          startIndex={currentIndex}
+                          onImageLoad={onImageLoad}
 
-    /> : null;
+            />
+            <ToastContainer position="top-center"
+                            autoClose={2000}
+                            hideProgressBar={true}/>
+        </div>
+         : null;
 };
 
 export default App;
