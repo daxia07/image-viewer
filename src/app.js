@@ -23,8 +23,14 @@ const App = () => {
 
     const handlers = useSwipeable({
         onSwipedUp: () => console.log("Up"),
-        onSwipedDown: () => console.log("Down"),
-        onTap: (event) => console.log("Tap"),
+        onSwipedDown: () => {
+            console.log("Down")
+            toast("Down")
+        },
+        onTap: (event) => {
+            toast('Tap!')
+            console.log("Tap")
+        },
         preventDefaultTouchmoveEvent: true,
         trackMouse: true
     });
