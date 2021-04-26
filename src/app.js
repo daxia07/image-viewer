@@ -25,11 +25,18 @@ const App = () => {
         onSwipedUp: () => console.log("Up"),
         onSwipedDown: () => {
             console.log("Down")
-            toast("Down")
         },
         onTap: (event) => {
             toast('Tap!')
-            console.log("Tap")
+            console.log(event)
+            const { event: { view: { outerWidth }, clientX }} = event
+            if (clientX < 0.3 * outerWidth) {
+                console.log("Left tap")
+            } else if (clientX < 0.7 * outerWidth) {
+                console.log("Middle tap")
+            } else {
+                console.log("Right tap")
+            }
         },
         preventDefaultTouchmoveEvent: true,
         trackMouse: true
