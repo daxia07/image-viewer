@@ -37,3 +37,14 @@ return (<div><h1>worldclockapi.com data (edit App.js)</h1>
 
 export default App;
 ```
+
+```javascript
+const handlers = useSwipeable({
+onSwipedLeft: () => slide(NEXT),
+onSwipedRight: () => slide(PREV),
+preventDefaultTouchmoveEvent: true,
+trackMouse: true
+});
+```
+
+https://medium.com/trabe/prevent-click-events-on-double-click-with-react-with-and-without-hooks-6bf3697abc40

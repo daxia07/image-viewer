@@ -75,3 +75,15 @@ export const updateEndTime = (currentIndex, endTime, post) => {
         })
     }
 }
+
+export const updateTopic = (preTopic) => {
+    console.log(`Updating topic as ${preTopic}`)
+    return dispatch => {
+        dispatch({
+            type: "UPDATE_TOPIC",
+            data: {
+                preTopic
+            }
+        })
+    };
+}

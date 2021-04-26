@@ -2,10 +2,12 @@ import React, {useEffect, useRef} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
-import { getData, updateIndex, updateMeta, updateEndTime } from "./actions";
+import { getData, updateIndex, updateMeta, updateEndTime, updateTopic } from "./actions";
 import { useBeforeunload } from 'react-beforeunload';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useSwipeable } from "react-swipeable";
+
 
 const { REACT_APP_PAGE_LIMIT, REACT_APP_IMAGE_TIMEOUT } = process.env;
 
@@ -18,12 +20,22 @@ const App = () => {
     const images = posts? posts.map(post => ({
         original: post.url
     })) : []
+
+    const handlers = useSwipeable({
+        onSwipedUp: () => console.log("Up"),
+        onSwipedDown: () => console.log("Down"),
+        onTap: (event) => console.log("Tap"),
+        preventDefaultTouchmoveEvent: true,
+        trackMouse: true
+    });
     //TODO: disable buttons and detect click and swipes
 
     const onImageLoad = async event => {
         const { topic } = posts[currentIndex]
-        if ( (currentIndex !== 0) && (topic !== posts[currentIndex-1].topic)) {
+        const { preTopic } = content
+        if (topic !== preTopic ) {
             toast(topic)
+            dispatch(updateTopic(topic))
         }
         const {target: { clientWidth, clientHeight }} = event
         let timeout = parseInt(REACT_APP_IMAGE_TIMEOUT)
@@ -87,14 +99,10 @@ const App = () => {
         if (!fetchedMaxPage) {
             dispatch(getData(1));
         }
-        if ((currentIndex === 0) && (posts.length > 0)) {
-            const { topic } = posts[0]
-            topic && toast(topic)
-        }
-    }, [dispatch, fetchedMaxPage]);
+    });
 
     return images ?
-        <div>
+        <div {...handlers}>
             <ImageGallery items={images}
                           showThumbnails={false}
                           lazyLoad
