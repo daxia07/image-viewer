@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
 import { getData, updateIndex, updateMeta, updateEndTime, updateTopic } from "./actions";
-import { useBeforeunload } from 'react-beforeunload';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSwipeable } from "react-swipeable";
@@ -25,9 +24,11 @@ const App = () => {
         onSwipedUp: () => console.log("Up"),
         onSwipedDown: () => {
             console.log("Down")
+            //TODO: fetch data until the last post comes with a different topic
+            //mark posts in between as dislikes
+            //switch to a new index
         },
         onTap: (event) => {
-            toast('Tap!')
             console.log(event)
             const { event: { view: { outerWidth }, clientX }} = event
             if (clientX < 0.3 * outerWidth) {
@@ -41,7 +42,6 @@ const App = () => {
         preventDefaultTouchmoveEvent: true,
         trackMouse: true
     });
-    //TODO: disable buttons and detect click and swipes
 
     const onImageLoad = async event => {
         const { topic } = posts[currentIndex]
@@ -74,14 +74,6 @@ const App = () => {
         const startTime = Math.floor(Date.now() / 1000)
         dispatch(updateMeta({ratio, startTime, currentIndex}))
     }
-
-    useBeforeunload( event => {
-        // event.preventDefault();
-        const { posts } = content
-        const viewedPosts = posts.filter( item => !!item.views)
-        console.log(viewedPosts)
-    });
-
 
     const  onBeforeSlide = async (nextIndex) => {
         // last three item fetch new
