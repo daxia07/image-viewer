@@ -87,6 +87,10 @@ const App = () => {
         if (!fetchedMaxPage) {
             dispatch(getData(1));
         }
+        if ((currentIndex === 0) && (posts.length > 0)) {
+            const { topic } = posts[0]
+            topic && toast(topic)
+        }
     }, [dispatch, fetchedMaxPage]);
 
     return images ?
@@ -100,7 +104,7 @@ const App = () => {
                           onImageLoad={onImageLoad}
 
             />
-            <ToastContainer position="top-center"
+            <ToastContainer position="bottom-center"
                             autoClose={2000}
                             hideProgressBar={true}/>
         </div>
