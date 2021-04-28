@@ -60,10 +60,9 @@ const App = () => {
     });
 
     const onImageLoad = async event => {
-        //TODO: test from right to left
         const { topic } = posts[currentIndex]
         const { preTopic } = content
-        if (topic !== preTopic ) {
+        if ((topic !== preTopic) && (currentIndex === 0)) {
             document.title = topic
             toast(topic)
             dispatch(updateData({preTopic: topic}))
@@ -80,8 +79,13 @@ const App = () => {
 
     const  onBeforeSlide = async (nextIndex) => {
         // last three item fetch new
-        console.log('Data as:')
-        console.log(content)
+        const { topic } = posts[currentIndex]
+        const { preTopic } = content
+        if (topic !== preTopic) {
+            document.title = topic
+            toast(preTopic)
+            dispatch(updateData({preTopic: topic}))
+        }
         // console.log(`System nextIndex ${nextIndex}`)
         let fetchedCurrentIndex = controllerRef.current.getCurrentIndex()
         // console.log(`Current Index as ${currentIndex}`)
