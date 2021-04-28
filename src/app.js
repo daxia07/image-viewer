@@ -38,6 +38,7 @@ const App = () => {
                 console.log("Middle tap")
                 const { topic } = posts[currentIndex] 
                 toast(topic)
+                // TODO: tag as like 
             } else {
                 console.log("Right tap")
                 controllerRef.current.slideToIndex(Math.min(currentIndex+1, posts.length-1))
