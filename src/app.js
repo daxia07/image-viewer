@@ -115,8 +115,6 @@ const App = () => {
                           ref={controllerRef}
                           startIndex={currentIndex}
                           onImageLoad={onImageLoad}
-                          useBrowserFullscreen={false}
-
             />
             <ToastContainer position="bottom-center"
                             autoClose={2000}
