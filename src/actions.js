@@ -9,7 +9,8 @@ export const fetchData = page => {
         axios.get(`${REACT_APP_API_URI}?page=${page}&limit=${REACT_APP_PAGE_LIMIT}`).then(res =>
             dispatch({
                 type: "FETCH_DATA",
-                data: {...res.data,
+                data: {
+                    ...res.data,
                     fetchedMaxPage: page
                 }
             })

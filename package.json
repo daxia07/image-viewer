@@ -19,6 +19,7 @@
     "react-toastify": "^7.0.4",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
+    "sleep-promise": "^9.1.0",
     "web-vitals": "^1.0.1"
   },
   "scripts": {

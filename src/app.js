@@ -7,9 +7,10 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSwipeable } from "react-swipeable";
 import moment from "moment";
+// import sleep from 'sleep-promise';
 
 
-const { REACT_APP_PAGE_LIMIT } = process.env;
+const { REACT_APP_PAGE_LIMIT, REACT_APP_PRELOAD=20 } = process.env;
 
 
 const App = () => {
@@ -25,6 +26,7 @@ const App = () => {
         onSwipedUp: () => console.log("Up"),
         onSwipedDown: () => {
             console.log("Down")
+            toast(`Removing current topic`)
             //TODO: fetch data until the last post comes with a different topic
             //mark posts in between as dislikes
             //switch to a new index
@@ -60,6 +62,7 @@ const App = () => {
     });
 
     const onImageLoad = async event => {
+        // TODO: add spinner
         const { topic } = posts[currentIndex]
         const { preTopic } = content
         if ((topic !== preTopic) && (currentIndex === 0)) {
@@ -77,8 +80,13 @@ const App = () => {
         dispatch(updatePost({index: currentIndex, post: newPost}))
     }
 
-    const  onBeforeSlide = async (nextIndex) => {
+    const  onBeforeSlide = async nextIndex => {
         // last three item fetch new
+        // TODO: swiping to the last item, check if loading started
+        // while (nextIndex === posts.length-1) {
+        //     await sleep(2000)
+        //     console.log('Sleeping')
+        // }
         const { topic } = posts[currentIndex]
         const { preTopic } = content
         if (topic !== preTopic) {
@@ -91,7 +99,7 @@ const App = () => {
         // console.log(`Current Index as ${currentIndex}`)
         const swipeRight = nextIndex === 0 || nextIndex > fetchedCurrentIndex
         let currentPage = Math.floor(nextIndex/REACT_APP_PAGE_LIMIT) + 1
-        if (((currentIndex + 3) % REACT_APP_PAGE_LIMIT === 0) && (fetchedMaxPage === currentPage)) {
+        if (((currentIndex + REACT_APP_PRELOAD) % REACT_APP_PAGE_LIMIT === 0) && (fetchedMaxPage === currentPage)) {
             // fetch new page and append to the list
             // if successful update max page
             if (swipeRight) {
