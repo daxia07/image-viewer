@@ -87,3 +87,32 @@ export const updateTopic = (preTopic) => {
         })
     };
 }
+
+export const updateLike = (currentIndex, post) => {
+    console.log(`Updating like meta for ${currentIndex}`)
+    const { likes = 0 } = post
+    const newPost = {
+        ...post,
+        likes: likes + 1,
+    }
+    axios.post(
+        REACT_APP_API_URI,
+        {
+            post: newPost
+        }, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(res => console.log(res))
+        .catch(e => console.log(e))
+    return dispatch => {
+        dispatch({
+            type: "UPDATE_LIKE",
+            data: {
+                post: newPost,
+                currentIndex,
+            }
+        })
+    }
+}

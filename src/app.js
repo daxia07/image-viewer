@@ -2,7 +2,7 @@ import React, {useEffect, useRef} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
-import { getData, updateIndex, updateMeta, updateEndTime, updateTopic } from "./actions";
+import { getData, updateIndex, updateMeta, updateEndTime, updateTopic, updateLike } from "./actions";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSwipeable } from "react-swipeable";
@@ -29,7 +29,7 @@ const App = () => {
             //switch to a new index
         },
         onTap: (event) => {
-            console.log(event)
+            // console.log(event)
             const { event: { target: {tagName }, pageX }} = event
             if ((tagName === 'svg') || !pageX) {
                 return
@@ -45,6 +45,7 @@ const App = () => {
                 // toast(`Middle tap on ${pageX}/${innerWidth}`)
                 const { topic } = posts[currentIndex] 
                 toast(topic)
+                dispatch(updateLike(currentIndex, posts[currentIndex]))
                 // TODO: tag as like 
             } else {
                 console.log("Right tap")
@@ -57,6 +58,7 @@ const App = () => {
     });
 
     const onImageLoad = async event => {
+        //TODO: test from right to left
         const { topic } = posts[currentIndex]
         const { preTopic } = content
         if (topic !== preTopic ) {
@@ -114,7 +116,6 @@ const App = () => {
     }
 
     useEffect(() => {
-        // document.title = "Sample Viewer"
         if (!fetchedMaxPage) {
             dispatch(getData(1));
         }

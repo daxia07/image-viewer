@@ -33,6 +33,15 @@ function reducer(state = { posts: [], currentIndex: 0, fetchedMaxPage: 0, preTop
                 posts
             }
         }
+        case "UPDATE_LIKE": {
+            const { currentIndex, post } = action.data
+            const { posts } = state
+            posts[currentIndex] = post
+            return {
+                ...state,
+                posts
+            }
+        }
         case "UPDATE_TOPIC": {
             const { data: { preTopic } } = action
             return {
