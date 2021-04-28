@@ -30,27 +30,25 @@ const App = () => {
         },
         onTap: (event) => {
             console.log(event)
-            const { event: { target: {tagName } }} = event
-            if (tagName === 'svg') {
+            const { event: { target: {tagName }, pageX }} = event
+            if ((tagName === 'svg') || !pageX) {
                 return
             }
-            const { event: { pageX, clientX, layerX, offsetX }} = event
-            toast(`PageX as ${pageX} ClientX as ${clientX} LayerX as ${layerX} offsetX as ${offsetX} `)
-
+            // toast(`PageX as ${pageX} ClientX as ${clientX} LayerX as ${layerX} offsetX as ${offsetX} `)
             const {innerWidth} = window
             if (pageX < 0.3 * innerWidth) {
-                toast(`Left tap on ${pageX}/${innerWidth}`)
+                // toast(`Left tap on ${pageX}/${innerWidth}`)
                 console.log("Left tap")
                 controllerRef.current.slideToIndex(Math.max(currentIndex-1, 0))
             } else if (pageX < 0.7 * innerWidth) {
                 console.log("Middle tap")
-                toast(`Middle tap on ${pageX}/${innerWidth}`)
+                // toast(`Middle tap on ${pageX}/${innerWidth}`)
                 const { topic } = posts[currentIndex] 
                 toast(topic)
                 // TODO: tag as like 
             } else {
                 console.log("Right tap")
-                toast(`Right tap on ${pageX}/${innerWidth}`)
+                // toast(`Right tap on ${pageX}/${innerWidth}`)
                 controllerRef.current.slideToIndex(Math.min(currentIndex+1, posts.length-1))
             }
         },
