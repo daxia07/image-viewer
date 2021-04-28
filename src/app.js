@@ -30,11 +30,15 @@ const App = () => {
         },
         onTap: (event) => {
             console.log(event)
-            const { event: { view: { outerWidth }, clientX }} = event
-            if (clientX < 0.3 * outerWidth) {
+            const { event: { target: {tagName } }} = event
+            if (tagName === 'svg') {
+                return
+            }
+            const { event: { pageX }} = event
+            if (pageX < 0.3 * window.innerWidth) {
                 console.log("Left tap")
                 controllerRef.current.slideToIndex(Math.max(currentIndex-1, 0))
-            } else if (clientX < 0.7 * outerWidth) {
+            } else if (pageX < 0.7 * window.innerWidth) {
                 console.log("Middle tap")
                 const { topic } = posts[currentIndex] 
                 toast(topic)
