@@ -46,5 +46,26 @@ preventDefaultTouchmoveEvent: true,
 trackMouse: true
 });
 ```
+```javascript
+const {target: { clientWidth, clientHeight }} = event
+        let timeout = parseInt(REACT_APP_IMAGE_TIMEOUT)
+        let ratio = clientHeight? clientWidth/clientHeight : 0
+        // wait till load 
+        if (!ratio) {
+            while (timeout > 0) {
+                await new Promise(r => setTimeout(r, 20));
+                ratio = clientHeight? clientWidth/clientHeight : 0
+                if (!!ratio) {
+                    break
+                }
+            }
+        }
+        if (!ratio) {
+            console.log("Image broken, will delete from DB")
+        } else {
+            console.log(`Image w/c ratios as: ${ratio}`)
+        }
+```
+
 
 https://medium.com/trabe/prevent-click-events-on-double-click-with-react-with-and-without-hooks-6bf3697abc40

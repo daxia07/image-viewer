@@ -1,24 +1,24 @@
 function reducer(state = { posts: [], currentIndex: 0, fetchedMaxPage: 0, preTopic: ""}, action) {
     switch (action.type) {
         case "FETCH_DATA": {
-            const {posts, fetchedMaxPage } = action.data
+            const {data: { posts, fetchedMaxPage} } = action
             return {
                 ...state,
                 posts: [...state.posts, ...posts],
                 fetchedMaxPage
             };
         }
-        case "UPDATE_INDEX": {
-            const { currentIndex } = action.data
+        case "UPDATE_DATA": {
+            const { data: updates } = action
             return {
                 ...state,
-                currentIndex
-            };
+                ...updates
+            }
         }
-        case "UPDATE_META": {
-            const { meta: { currentIndex, startTime } } = action.data
+        case "UPDATE_POST": {
+            const { data: {index, post} } = action
             const { posts } = state
-            posts[currentIndex] = {...posts[currentIndex], startTime}
+            posts[index] = post
             return {
                 ...state,
                 posts
@@ -32,22 +32,6 @@ function reducer(state = { posts: [], currentIndex: 0, fetchedMaxPage: 0, preTop
                 ...state,
                 posts
             }
-        }
-        case "UPDATE_LIKE": {
-            const { currentIndex, post } = action.data
-            const { posts } = state
-            posts[currentIndex] = post
-            return {
-                ...state,
-                posts
-            }
-        }
-        case "UPDATE_TOPIC": {
-            const { data: { preTopic } } = action
-            return {
-                ...state,
-                preTopic
-            };
         }
         default:
             return state;

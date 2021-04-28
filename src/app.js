@@ -2,13 +2,14 @@ import React, {useEffect, useRef} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
-import { getData, updateIndex, updateMeta, updateEndTime, updateTopic, updateLike } from "./actions";
+import { fetchData, updateData, updatePost } from "./actions";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSwipeable } from "react-swipeable";
+import moment from "moment";
 
 
-const { REACT_APP_PAGE_LIMIT, REACT_APP_IMAGE_TIMEOUT } = process.env;
+const { REACT_APP_PAGE_LIMIT } = process.env;
 
 
 const App = () => {
@@ -34,19 +35,20 @@ const App = () => {
             if ((tagName === 'svg') || !pageX) {
                 return
             }
-            // toast(`PageX as ${pageX} ClientX as ${clientX} LayerX as ${layerX} offsetX as ${offsetX} `)
             const {innerWidth} = window
             if (pageX < 0.3 * innerWidth) {
-                // toast(`Left tap on ${pageX}/${innerWidth}`)
                 console.log("Left tap")
                 controllerRef.current.slideToIndex(Math.max(currentIndex-1, 0))
             } else if (pageX < 0.7 * innerWidth) {
                 console.log("Middle tap")
-                // toast(`Middle tap on ${pageX}/${innerWidth}`)
-                const { topic } = posts[currentIndex] 
-                toast(topic)
-                dispatch(updateLike(currentIndex, posts[currentIndex]))
-                // TODO: tag as like 
+                const { topic } = posts[currentIndex]
+                toast(`💖 +1 for ${topic}`)
+                const { likes=0 } = posts[currentIndex]
+                const newPost = {
+                    ...posts[currentIndex],
+                    likes: likes+1
+                }
+                dispatch(updatePost({index: currentIndex, post: newPost}))
             } else {
                 console.log("Right tap")
                 // toast(`Right tap on ${pageX}/${innerWidth}`)
@@ -64,31 +66,16 @@ const App = () => {
         if (topic !== preTopic ) {
             document.title = topic
             toast(topic)
-            dispatch(updateTopic(topic))
-        }
-        const {target: { clientWidth, clientHeight }} = event
-        let timeout = parseInt(REACT_APP_IMAGE_TIMEOUT)
-        let ratio = clientHeight? clientWidth/clientHeight : 0
-        if (!ratio) {
-            while (timeout > 0) {
-                await new Promise(r => setTimeout(r, 20));
-                ratio = clientHeight? clientWidth/clientHeight : 0
-                if (!!ratio) {
-                    break
-                }
-            }
-        }
-        // TODO: sort with ratio in the same topic
-        if (!ratio) {
-            // TODO: delete image in DB
-            console.log("Image broken, will delete from DB")
-        } else {
-            //TODO: fetch from DB
-            console.log(`Image w/c ratios as: ${ratio}`)
+            dispatch(updateData({preTopic: topic}))
         }
         // record start time
         const startTime = Math.floor(Date.now() / 1000)
-        dispatch(updateMeta({ratio, startTime, currentIndex}))
+        const newPost = {
+            ...posts[currentIndex],
+            startTime,
+            updateDB: false
+        }
+        dispatch(updatePost({index: currentIndex, post: newPost}))
     }
 
     const  onBeforeSlide = async (nextIndex) => {
@@ -104,20 +91,30 @@ const App = () => {
             // fetch new page and append to the list
             // if successful update max page
             if (swipeRight) {
-                dispatch(getData(currentPage+1));
+                dispatch(fetchData(currentPage + 1));
             }
         }
         // increase or decrease index
         const newIndex = swipeRight? currentIndex+1:currentIndex-1
-        dispatch(updateIndex(newIndex))
+        dispatch(updateData({currentIndex: newIndex}))
+        // dispatch(updateIndex(newIndex))
         // update end time for viewing and like tag
         const endTime = Math.floor(Date.now() / 1000)
-        dispatch(updateEndTime(currentIndex, endTime, posts[currentIndex]))
+        const post = posts[currentIndex]
+        const { views = 0, totalDuration = 0 , startTime} = post
+        const visitedDate = moment(Date.now()).format('YYYY-MM-DD[T]HH:mm:ss');
+        const newPost = {
+            ...post,
+            visitedDate,
+            views: views + 1,
+            totalDuration: totalDuration + Math.min(endTime - startTime, 5),
+        }
+        dispatch(updatePost({index: currentIndex, post: newPost}))
     }
 
     useEffect(() => {
         if (!fetchedMaxPage) {
-            dispatch(getData(1));
+            dispatch(fetchData(1));
         }
     });
 
@@ -131,6 +128,7 @@ const App = () => {
                           startIndex={currentIndex}
                           onImageLoad={onImageLoad}
                           showNav={false}
+                          showIndex
             />
             <ToastContainer position="bottom-center"
                             autoClose={2000}
