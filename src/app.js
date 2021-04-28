@@ -33,10 +33,14 @@ const App = () => {
             const { event: { view: { outerWidth }, clientX }} = event
             if (clientX < 0.3 * outerWidth) {
                 console.log("Left tap")
+                controllerRef.current.slideToIndex(Math.max(currentIndex-1, 0))
             } else if (clientX < 0.7 * outerWidth) {
                 console.log("Middle tap")
+                const { topic } = posts[currentIndex] 
+                toast(topic)
             } else {
                 console.log("Right tap")
+                controllerRef.current.slideToIndex(Math.min(currentIndex+1, posts.length-1))
             }
         },
         preventDefaultTouchmoveEvent: true,
@@ -47,6 +51,7 @@ const App = () => {
         const { topic } = posts[currentIndex]
         const { preTopic } = content
         if (topic !== preTopic ) {
+            document.title = topic
             toast(topic)
             dispatch(updateTopic(topic))
         }
@@ -100,7 +105,7 @@ const App = () => {
     }
 
     useEffect(() => {
-        document.title = "Sample Viewer"
+        // document.title = "Sample Viewer"
         if (!fetchedMaxPage) {
             dispatch(getData(1));
         }
@@ -115,6 +120,7 @@ const App = () => {
                           ref={controllerRef}
                           startIndex={currentIndex}
                           onImageLoad={onImageLoad}
+                          showNav={false}
             />
             <ToastContainer position="bottom-center"
                             autoClose={2000}
