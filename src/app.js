@@ -7,8 +7,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSwipeable } from "react-swipeable";
 import moment from "moment";
-import sleep from "sleep-promise";
-// import sleep from 'sleep-promise';
 
 
 const { REACT_APP_PAGE_LIMIT="50", REACT_APP_PRELOAD="20" } = process.env;
@@ -72,9 +70,10 @@ const App = () => {
             toast(topic)
         }
         if ((currentIndex === posts.length-1) && fetchInProcess) {
-            toast("loading more pictures")
+            // toast("loading more pictures")
             setDisableSwipe(true)
-            await sleep(2000)
+        } else {
+            setDisableSwipe(false)
         }
         // record start time
         if (!startTime) {
@@ -95,7 +94,6 @@ const App = () => {
             // if fetching in process, wait
             // else fetch data
             console.log('Waiting')
-            await sleep(2000)
             toast('Waiting to load data')
         }
         const { topic } = currentPost
