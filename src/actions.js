@@ -1,6 +1,21 @@
 import axios from "axios";
+import sleep from "sleep-promise";
 
 const { REACT_APP_API_URI, REACT_APP_PAGE_LIMIT } = process.env;
+
+
+export const waitForData = () => {
+    console.log(`Waiting for data`)
+    return dispatch => {
+        sleep(2000).then(() => {
+            dispatch({
+                type: "UPDATE_DATA",
+                data: {
+                }
+            })
+        })
+    }
+}
 
 
 export const fetchData = page => {
@@ -11,7 +26,8 @@ export const fetchData = page => {
                 type: "FETCH_DATA",
                 data: {
                     ...res.data,
-                    fetchedMaxPage: page
+                    fetchedMaxPage: page,
+                    fetchInProcess: false
                 }
             })
         );

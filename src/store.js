@@ -1,4 +1,4 @@
-function reducer(state = { posts: [], currentIndex: 0, fetchedMaxPage: 0, preTopic: ""}, action) {
+function reducer(state = { posts: [], currentIndex: 0, fetchedMaxPage: 0, preTopic: "", fetchInProcess: false}, action) {
     switch (action.type) {
         case "FETCH_DATA": {
             const {data: { posts, fetchedMaxPage} } = action

@@ -7,17 +7,18 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSwipeable } from "react-swipeable";
 import moment from "moment";
+import sleep from "sleep-promise";
 // import sleep from 'sleep-promise';
 
 
-const { REACT_APP_PAGE_LIMIT, REACT_APP_PRELOAD=20 } = process.env;
+const { REACT_APP_PAGE_LIMIT="50", REACT_APP_PRELOAD="20" } = process.env;
 
 
 const App = () => {
     const content = useSelector(state => state);
     const dispatch = useDispatch();
     const controllerRef = useRef(null);
-    const { posts, fetchedMaxPage, currentIndex } = content
+    const { posts, fetchedMaxPage, currentIndex, fetchInProcess } = content
     const images = posts? posts.map(post => ({
         original: post.url
     })) : []
@@ -83,15 +84,18 @@ const App = () => {
     const  onBeforeSlide = async nextIndex => {
         // last three item fetch new
         // TODO: swiping to the last item, check if loading started
-        // while (nextIndex === posts.length-1) {
-        //     await sleep(2000)
-        //     console.log('Sleeping')
-        // }
+        if ((nextIndex === posts.length-1) && fetchInProcess) {
+            // if fetching in process, wait
+            // else fetch data
+            console.log('Waiting')
+            await sleep(2000)
+            toast('Waiting to load data')
+        }
         const { topic } = posts[currentIndex]
-        const { preTopic } = content
-        if (topic !== preTopic) {
+        const { topic: nextTopic } = posts[nextIndex]
+        if (topic !== nextTopic) {
             document.title = topic
-            toast(preTopic)
+            toast(nextTopic)
             dispatch(updateData({preTopic: topic}))
         }
         // console.log(`System nextIndex ${nextIndex}`)
@@ -99,11 +103,14 @@ const App = () => {
         // console.log(`Current Index as ${currentIndex}`)
         const swipeRight = nextIndex === 0 || nextIndex > fetchedCurrentIndex
         let currentPage = Math.floor(nextIndex/REACT_APP_PAGE_LIMIT) + 1
-        if (((currentIndex + REACT_APP_PRELOAD) % REACT_APP_PAGE_LIMIT === 0) && (fetchedMaxPage === currentPage)) {
+        if ((((currentIndex + parseInt(REACT_APP_PRELOAD)) % REACT_APP_PAGE_LIMIT) === 0) && (fetchedMaxPage === currentPage)) {
             // fetch new page and append to the list
             // if successful update max page
             if (swipeRight) {
-                dispatch(fetchData(currentPage + 1));
+                dispatch(updateData({ fetchInProcess: true}))
+                if (!fetchInProcess) {
+                    dispatch(fetchData(currentPage + 1));
+                }
             }
         }
         // increase or decrease index
@@ -125,7 +132,8 @@ const App = () => {
     }
 
     useEffect(() => {
-        if (!fetchedMaxPage) {
+        if (!fetchedMaxPage && !fetchInProcess) {
+            dispatch(updateData({ fetchInProcess: true }))
             dispatch(fetchData(1));
         }
     });
