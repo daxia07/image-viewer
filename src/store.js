@@ -1,11 +1,12 @@
 function reducer(state = { posts: [], currentIndex: 0, fetchedMaxPage: 0, preTopic: "", fetchInProcess: false}, action) {
     switch (action.type) {
         case "FETCH_DATA": {
-            const {data: { posts, fetchedMaxPage} } = action
+            const {data: { posts, fetchedMaxPage, fetchInProcess} } = action
             return {
                 ...state,
                 posts: [...state.posts, ...posts],
-                fetchedMaxPage
+                fetchedMaxPage,
+                fetchInProcess
             };
         }
         case "UPDATE_DATA": {

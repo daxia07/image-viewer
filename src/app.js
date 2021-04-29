@@ -19,6 +19,7 @@ const App = () => {
     const dispatch = useDispatch();
     const controllerRef = useRef(null);
     const { posts, fetchedMaxPage, currentIndex, fetchInProcess } = content
+    const currentPost = posts[currentIndex]
     const images = posts? posts.map(post => ({
         original: post.url
     })) : []
@@ -44,11 +45,11 @@ const App = () => {
                 controllerRef.current.slideToIndex(Math.max(currentIndex-1, 0))
             } else if (pageX < 0.7 * innerWidth) {
                 console.log("Middle tap")
-                const { topic } = posts[currentIndex]
+                const { topic } = currentPost
                 toast(`💖 +1 for ${topic}`)
-                const { likes=0 } = posts[currentIndex]
+                const { likes=0 } = currentPost
                 const newPost = {
-                    ...posts[currentIndex],
+                    ...currentPost,
                     likes: likes+1
                 }
                 dispatch(updatePost({index: currentIndex, post: newPost}))
@@ -64,21 +65,21 @@ const App = () => {
 
     const onImageLoad = async event => {
         // TODO: add spinner
-        const { topic } = posts[currentIndex]
-        const { preTopic } = content
-        if ((topic !== preTopic) && (currentIndex === 0)) {
+        let { topic, startTime } = currentPost
+        if ((currentIndex === 0) && (!startTime)) {
             document.title = topic
             toast(topic)
-            dispatch(updateData({preTopic: topic}))
         }
         // record start time
-        const startTime = Math.floor(Date.now() / 1000)
-        const newPost = {
-            ...posts[currentIndex],
-            startTime,
-            updateDB: false
+        if (!startTime) {
+            startTime = Math.floor(Date.now() / 1000)
+            const newPost = {
+                ...currentPost,
+                startTime,
+                updateDB: false
+            }
+            dispatch(updatePost({index: currentIndex, post: newPost}))
         }
-        dispatch(updatePost({index: currentIndex, post: newPost}))
     }
 
     const  onBeforeSlide = async nextIndex => {
@@ -91,12 +92,12 @@ const App = () => {
             await sleep(2000)
             toast('Waiting to load data')
         }
-        const { topic } = posts[currentIndex]
+        const { topic } = currentPost
         const { topic: nextTopic } = posts[nextIndex]
         if (topic !== nextTopic) {
             document.title = topic
             toast(nextTopic)
-            dispatch(updateData({preTopic: topic}))
+            // dispatch(updateData({preTopic: topic}))
         }
         // console.log(`System nextIndex ${nextIndex}`)
         let fetchedCurrentIndex = controllerRef.current.getCurrentIndex()
@@ -107,19 +108,18 @@ const App = () => {
             // fetch new page and append to the list
             // if successful update max page
             if (swipeRight) {
-                dispatch(updateData({ fetchInProcess: true}))
                 if (!fetchInProcess) {
                     dispatch(fetchData(currentPage + 1));
+                    dispatch(updateData({ fetchInProcess: true}))
                 }
             }
         }
         // increase or decrease index
         const newIndex = swipeRight? currentIndex+1:currentIndex-1
-        dispatch(updateData({currentIndex: newIndex}))
         // dispatch(updateIndex(newIndex))
         // update end time for viewing and like tag
         const endTime = Math.floor(Date.now() / 1000)
-        const post = posts[currentIndex]
+        const post = currentPost
         const { views = 0, totalDuration = 0 , startTime} = post
         const visitedDate = moment(Date.now()).format('YYYY-MM-DD[T]HH:mm:ss');
         const newPost = {
@@ -128,6 +128,7 @@ const App = () => {
             views: views + 1,
             totalDuration: totalDuration + Math.min(endTime - startTime, 5),
         }
+        dispatch(updateData({currentIndex: newIndex}))
         dispatch(updatePost({index: currentIndex, post: newPost}))
     }
 
