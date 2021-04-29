@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
@@ -13,7 +13,6 @@ const { REACT_APP_PAGE_LIMIT="50", REACT_APP_PRELOAD="20" } = process.env;
 
 
 const App = () => {
-    const [disableSwipe, setDisableSwipe] = useState(false);
     const content = useSelector(state => state);
     const dispatch = useDispatch();
     const controllerRef = useRef(null);
@@ -54,7 +53,6 @@ const App = () => {
                 dispatch(updatePost({index: currentIndex, post: newPost}))
             } else {
                 console.log("Right tap")
-                // toast(`Right tap on ${pageX}/${innerWidth}`)
                 controllerRef.current.slideToIndex(Math.min(currentIndex+1, posts.length-1))
             }
         },
@@ -69,12 +67,6 @@ const App = () => {
             document.title = topic
             toast(topic)
         }
-        if ((currentIndex === posts.length-1) && fetchInProcess) {
-            // toast("loading more pictures")
-            setDisableSwipe(true)
-        } else {
-            setDisableSwipe(false)
-        }
         // record start time
         if (!startTime) {
             startTime = Math.floor(Date.now() / 1000)
@@ -88,24 +80,13 @@ const App = () => {
     }
 
     const  onBeforeSlide = async nextIndex => {
-        // last three item fetch new
-        // TODO: swiping to the last item, check if loading started
-        if ((nextIndex === posts.length-1) && fetchInProcess) {
-            // if fetching in process, wait
-            // else fetch data
-            console.log('Waiting')
-            toast('Waiting to load data')
-        }
         const { topic } = currentPost
         const { topic: nextTopic } = posts[nextIndex]
         if (topic !== nextTopic) {
             document.title = topic
             toast(nextTopic)
-            // dispatch(updateData({preTopic: topic}))
         }
-        // console.log(`System nextIndex ${nextIndex}`)
         let fetchedCurrentIndex = controllerRef.current.getCurrentIndex()
-        // console.log(`Current Index as ${currentIndex}`)
         const swipeRight = nextIndex === 0 || nextIndex > fetchedCurrentIndex
         let currentPage = Math.floor(nextIndex/REACT_APP_PAGE_LIMIT) + 1
         if ((((currentIndex + parseInt(REACT_APP_PRELOAD)) % REACT_APP_PAGE_LIMIT) === 0) && (fetchedMaxPage === currentPage)) {
@@ -153,8 +134,7 @@ const App = () => {
                           startIndex={currentIndex}
                           onImageLoad={onImageLoad}
                           showNav={false}
-                          showIndex
-                          disableSwipe={disableSwipe}
+                          infinite={false}
             />
             <ToastContainer position="bottom-center"
                             autoClose={2000}
