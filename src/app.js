@@ -1,8 +1,8 @@
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
-import { fetchData, updateData, updatePost } from "./actions";
+import {fetchData, updateData, updatePost} from "./actions";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSwipeable } from "react-swipeable";
@@ -15,6 +15,7 @@ const { REACT_APP_PAGE_LIMIT="50", REACT_APP_PRELOAD="20" } = process.env;
 
 
 const App = () => {
+    const [disableSwipe, setDisableSwipe] = useState(false);
     const content = useSelector(state => state);
     const dispatch = useDispatch();
     const controllerRef = useRef(null);
@@ -69,6 +70,11 @@ const App = () => {
         if ((currentIndex === 0) && (!startTime)) {
             document.title = topic
             toast(topic)
+        }
+        if ((currentIndex === posts.length-1) && fetchInProcess) {
+            toast("loading more pictures")
+            setDisableSwipe(true)
+            await sleep(2000)
         }
         // record start time
         if (!startTime) {
@@ -150,6 +156,7 @@ const App = () => {
                           onImageLoad={onImageLoad}
                           showNav={false}
                           showIndex
+                          disableSwipe={disableSwipe}
             />
             <ToastContainer position="bottom-center"
                             autoClose={2000}
