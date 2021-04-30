@@ -7,6 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSwipeable } from "react-swipeable";
 import moment from "moment";
+import { removeByTopic } from "./utils";
 
 
 const { REACT_APP_PAGE_LIMIT="50", REACT_APP_PRELOAD="20" } = process.env;
@@ -26,12 +27,20 @@ const App = () => {
         onSwipedUp: () => console.log("Up"),
         onSwipedDown: () => {
             console.log("Down")
-            toast(`Removing current topic`)
             //TODO: fetch data until the last post comes with a different topic
             //mark posts in between as dislikes
             //switch to a new index
+            const {fetchedMaxPage} = content
+            const {topic} = posts[currentIndex]
+            toast(`Removing topic ${topic}`)
+            dispatch(fetchData(fetchedMaxPage))
+            // new action to delete post in reducer
+            const newPosts = removeByTopic(posts, topic, currentIndex)
+            dispatch(updateData({posts: newPosts}))
+            // TODO: send dislike info by topic
+            
         },
-        onTap: (event) => {
+        onTap: event => {
             // console.log(event)
             const { event: { target: {tagName }, pageX }} = event
             if ((tagName === 'svg') || !pageX) {
@@ -101,7 +110,6 @@ const App = () => {
         }
         // increase or decrease index
         const newIndex = swipeRight? currentIndex+1:currentIndex-1
-        // dispatch(updateIndex(newIndex))
         // update end time for viewing and like tag
         const endTime = Math.floor(Date.now() / 1000)
         const post = currentPost
@@ -135,6 +143,7 @@ const App = () => {
                           onImageLoad={onImageLoad}
                           showNav={false}
                           infinite={false}
+                          showIndex
             />
             <ToastContainer position="bottom-center"
                             autoClose={2000}

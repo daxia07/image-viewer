@@ -1,10 +1,16 @@
-function reducer(state = { posts: [], currentIndex: 0, fetchedMaxPage: 0, preTopic: "", fetchInProcess: false}, action) {
+import {removeByTopic} from "./utils";
+
+
+function reducer(state = { posts: [], currentIndex: 0,
+     fetchedMaxPage: 0, preTopic: "", 
+     fetchInProcess: false, skipTopic: ""}, action) {
     switch (action.type) {
         case "FETCH_DATA": {
-            const {data: { posts, fetchedMaxPage, fetchInProcess} } = action
+            const {data: { posts, fetchedMaxPage, fetchInProcess, skipTopic, currentIndex} } = action
+            const updatedPosts = removeByTopic(posts, skipTopic, currentIndex)
             return {
                 ...state,
-                posts: [...state.posts, ...posts],
+                posts: updatedPosts,
                 fetchedMaxPage,
                 fetchInProcess
             };
