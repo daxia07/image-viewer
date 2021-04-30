@@ -33,12 +33,11 @@ const App = () => {
             const {fetchedMaxPage} = content
             const {topic} = posts[currentIndex]
             toast(`Removing topic ${topic}`)
-            dispatch(fetchData(fetchedMaxPage))
             // new action to delete post in reducer
             const newPosts = removeByTopic(posts, topic, currentIndex)
-            dispatch(updateData({posts: newPosts}))
-            // TODO: send dislike info by topic
-            
+            dispatch(updateData({posts: newPosts, skipTopic: topic}))
+            dispatch(updatePost({index: currentIndex, post: {...currentPost, increaseDike: 1}}))
+            dispatch(fetchData(fetchedMaxPage))
         },
         onTap: event => {
             // console.log(event)
@@ -101,13 +100,12 @@ const App = () => {
         if ((((currentIndex + parseInt(REACT_APP_PRELOAD)) % REACT_APP_PAGE_LIMIT) === 0) && (fetchedMaxPage === currentPage)) {
             // fetch new page and append to the list
             // if successful update max page
-            if (swipeRight) {
-                if (!fetchInProcess) {
-                    dispatch(fetchData(currentPage + 1));
-                    dispatch(updateData({ fetchInProcess: true}))
-                }
+            if (swipeRight && !fetchInProcess) {
+                dispatch(updateData({ fetchInProcess: true}))
+                dispatch(fetchData(currentPage + 1));
             }
         }
+
         // increase or decrease index
         const newIndex = swipeRight? currentIndex+1:currentIndex-1
         // update end time for viewing and like tag
