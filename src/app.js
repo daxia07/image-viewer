@@ -87,6 +87,18 @@ const App = () => {
         }
     }
 
+    const onImageError = event => {
+        console.log('error image')
+        console.log(currentPost.url)
+        //TODO delete image and swipe to the next
+        if (currentIndex !== posts.length-1) {
+            controllerRef.current.slideToIndex(currentIndex+1)
+            dispatch(updateData({currentIndex: currentIndex+1}))
+        } else {
+            console.log('Fetch data')
+        }
+    }
+
     const  onBeforeSlide = async nextIndex => {
         const { topic } = currentPost
         const { topic: nextTopic } = posts[nextIndex]
@@ -131,7 +143,7 @@ const App = () => {
     });
 
     return images ?
-        <div {...handlers}>
+        <div {...handlers} style={{height: '100%'}}>
             <ImageGallery items={images}
                           showThumbnails={false}
                           lazyLoad
@@ -142,6 +154,7 @@ const App = () => {
                           showNav={false}
                           infinite={false}
                           showIndex
+                          onImageError={onImageError}
             />
             <ToastContainer position="bottom-center"
                             autoClose={2000}
