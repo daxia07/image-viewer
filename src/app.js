@@ -10,18 +10,19 @@ import moment from "moment";
 import { removeByTopic } from "./utils";
 
 
-const { REACT_APP_PAGE_LIMIT="50", REACT_APP_PRELOAD="20" } = process.env;
+const { REACT_APP_PRELOAD="20" } = process.env;
 
 
 const App = () => {
     const content = useSelector(state => state);
     const dispatch = useDispatch();
     const controllerRef = useRef(null);
-    const { posts, fetchedMaxPage, currentIndex, fetchInProcess } = content
+    const { posts, fetchedMaxPage, currentIndex, fetchInProcess, reFetch } = content
     const currentPost = posts[currentIndex]
     const images = posts? posts.map(post => ({
         original: post.url
     })) : []
+
 
     const handlers = useSwipeable({
         onSwipedUp: () => console.log("Up"),
@@ -32,10 +33,11 @@ const App = () => {
             const {topic} = posts[currentIndex]
             toast(`Removing topic ${topic}`)
             // new action to delete post in reducer
-            const nextIndex = removeByTopic(posts, topic, currentIndex)
+            const firstNonSkipPostIndex = removeByTopic(posts, topic, currentIndex)
+            const nextIndex = Math.min(firstNonSkipPostIndex, posts.length-1)
             controllerRef.current.slideToIndex(nextIndex)
-            dispatch(updatePost({post: {...currentPost, increaseDike: 1}}))
-            dispatch(updateData({currentIndex: nextIndex, skipTopic: topic}))
+            dispatch(updatePost({post: {...currentPost, increaseDislike: 1}}))
+            dispatch(updateData({currentIndex: nextIndex, skipTopic: topic, fetchInProcess: true}))
             dispatch(fetchData(posts.length-currentIndex-1))
         },
         onTap: event => {
@@ -84,6 +86,11 @@ const App = () => {
             }
             dispatch(updatePost({index: currentIndex, post: newPost}))
         }
+        if ((currentIndex === posts.length-1) && !fetchInProcess) {
+            toast("Fetching Data")
+            dispatch(updateData({ fetchInProcess: true}))
+            dispatch(fetchData(0))
+        }
     }
 
     const onImageError = event => {
@@ -107,8 +114,7 @@ const App = () => {
         }
         let fetchedCurrentIndex = controllerRef.current.getCurrentIndex()
         const swipeRight = nextIndex === 0 || nextIndex > fetchedCurrentIndex
-        let currentPage = Math.floor(nextIndex/REACT_APP_PAGE_LIMIT) + 1
-        if ((((currentIndex + parseInt(REACT_APP_PRELOAD)) % REACT_APP_PAGE_LIMIT) === 0) && (fetchedMaxPage === currentPage)) {
+        if (((currentIndex + parseInt(REACT_APP_PRELOAD)) - posts.length) >= 0) {
             // fetch new page and append to the list
             // if successful update max page
             if (swipeRight && !fetchInProcess) {
@@ -137,6 +143,10 @@ const App = () => {
 
     useEffect(() => {
         if (!fetchedMaxPage && !fetchInProcess) {
+            dispatch(updateData({ fetchInProcess: true }))
+            dispatch(fetchData(0));
+        }
+        if (!fetchInProcess && reFetch) {
             dispatch(updateData({ fetchInProcess: true }))
             dispatch(fetchData(0));
         }

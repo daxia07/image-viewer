@@ -3,7 +3,7 @@ import {removeByTopic} from "./utils";
 
 function reducer(state = { posts: [], currentIndex: 0,
      fetchedMaxPage: 0, preTopic: "", 
-     fetchInProcess: false, skipTopic: ""}, action) {
+     fetchInProcess: false, skipTopic: "", reFetch: false}, action) {
     switch (action.type) {
         case "FETCH_DATA": {
             const { skipTopic, fetchedMaxPage } = state
@@ -13,8 +13,9 @@ function reducer(state = { posts: [], currentIndex: 0,
             return {
                 ...state,
                 posts: [...state.posts, ...newPosts],
-                fetchedMaxPage: fetchedMaxPage+1,
-                fetchInProcess
+                fetchedMaxPage: newPosts? fetchedMaxPage+1: fetchedMaxPage,
+                fetchInProcess,
+                reFetch: newPosts.length === 0
             };
         }
         case "UPDATE_DATA": {

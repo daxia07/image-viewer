@@ -7,5 +7,5 @@ export const removeByTopic = (arr, topic, startIndex) => {
         break;
       }
     }
-    return Math.min(i, arr.length-1);
+    return i
   }
