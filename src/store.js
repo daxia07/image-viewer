@@ -6,14 +6,14 @@ function reducer(state = { posts: [], currentIndex: 0,
      fetchInProcess: false, skipTopic: ""}, action) {
     switch (action.type) {
         case "FETCH_DATA": {
-            const { skipTopic, currentIndex } = state
-            const {data: { posts, fetchedMaxPage, fetchInProcess } } = action
+            const { skipTopic, currentIndex, fetchedMaxPage } = state
+            const {data: { posts, fetchInProcess } } = action
             let updatedPosts = [...state.posts, ...posts]
             updatedPosts = removeByTopic(updatedPosts, skipTopic, currentIndex)
             return {
                 ...state,
                 posts: updatedPosts,
-                fetchedMaxPage,
+                fetchedMaxPage: fetchedMaxPage+1,
                 fetchInProcess
             };
         }

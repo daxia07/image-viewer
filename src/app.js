@@ -114,7 +114,8 @@ const App = () => {
             // if successful update max page
             if (swipeRight && !fetchInProcess) {
                 dispatch(updateData({ fetchInProcess: true}))
-                dispatch(fetchData(currentPage + 1));
+                // how many remaining images to skip
+                dispatch(fetchData(posts.length-currentIndex-1));
             }
         }
 
@@ -138,7 +139,7 @@ const App = () => {
     useEffect(() => {
         if (!fetchedMaxPage && !fetchInProcess) {
             dispatch(updateData({ fetchInProcess: true }))
-            dispatch(fetchData(1));
+            dispatch(fetchData(0));
         }
     });
 
