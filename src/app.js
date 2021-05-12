@@ -27,7 +27,6 @@ const App = () => {
         onSwipedUp: () => console.log("Up"),
         onSwipedDown: () => {
             console.log("Down")
-            //TODO: fetch data until the last post comes with a different topic
             //mark posts in between as dislikes
             //switch to a new index
             const {topic} = posts[currentIndex]
@@ -35,7 +34,8 @@ const App = () => {
             // new action to delete post in reducer
             const nextIndex = removeByTopic(posts, topic, currentIndex)
             controllerRef.current.slideToIndex(nextIndex)
-            dispatch(updatePost({index: currentIndex, post: {...currentPost, increaseDike: 1}}))
+            dispatch(updatePost({post: {...currentPost, increaseDike: 1}}))
+            dispatch(updateData({currentIndex: nextIndex, skipTopic: topic}))
             dispatch(fetchData(posts.length-currentIndex-1))
         },
         onTap: event => {
