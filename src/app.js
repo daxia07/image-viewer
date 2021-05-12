@@ -30,14 +30,13 @@ const App = () => {
             //TODO: fetch data until the last post comes with a different topic
             //mark posts in between as dislikes
             //switch to a new index
-            const {fetchedMaxPage} = content
             const {topic} = posts[currentIndex]
             toast(`Removing topic ${topic}`)
             // new action to delete post in reducer
-            const newPosts = removeByTopic(posts, topic, currentIndex)
-            dispatch(updateData({posts: newPosts, skipTopic: topic}))
+            const nextIndex = removeByTopic(posts, topic, currentIndex)
+            controllerRef.current.slideToIndex(nextIndex)
             dispatch(updatePost({index: currentIndex, post: {...currentPost, increaseDike: 1}}))
-            dispatch(fetchData(fetchedMaxPage))
+            dispatch(fetchData(posts.length-currentIndex-1))
         },
         onTap: event => {
             // console.log(event)

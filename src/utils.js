@@ -1,11 +1,11 @@
 export const removeByTopic = (arr, topic, startIndex) => {
-    let i = startIndex + 1;
+    let i = startIndex;
     while (i < arr.length) {
       if (arr[i].topic === topic) {
-        arr.splice(i, 1);
-      } else {
         ++i;
+      } else {
+        break;
       }
     }
-    return arr;
+    return Math.min(i, arr.length-1);
   }

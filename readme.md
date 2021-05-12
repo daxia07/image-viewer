@@ -98,3 +98,6 @@ export default App;
 
 
 https://medium.com/trabe/prevent-click-events-on-double-click-with-react-with-and-without-hooks-6bf3697abc40
+
+### prevent rerender
+### Add auth
